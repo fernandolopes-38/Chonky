@@ -79,7 +79,6 @@ export const FileContextMenu: React.FC<FileContextMenuProps> = React.memo(() => 
     return (
         <Menu
             elevation={2}
-            disablePortal
             onClose={hideContextMenu}
             transitionDuration={150}
             open={!!contextMenuConfig}

@@ -51,6 +51,7 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
         };
     }, [dispatch]);
 
+    console.log("_FILE debouncedLocalSearchString", debouncedLocalSearchString)
     useEffect(() => {
         setShowLoadingIndicator(false);
         dispatch(reduxActions.setSearchString(debouncedLocalSearchString));
