@@ -18,6 +18,11 @@ export const initialRootState: RootState = {
     folderChainErrorMessages: [],
     folderChain: [],
 
+    allRawFiles: [],
+    allFileMap: {},
+    allFileIds: [],
+    allCleanFileIds: [],
+
     rawFiles: [],
     filesErrorMessages: [],
     fileMap: {},

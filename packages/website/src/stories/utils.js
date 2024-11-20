@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import { ChonkyActions, ChonkyFileActionData } from 'chonky';
+import { ChonkyActions, ChonkyFileActionData } from '@fernando.lopes/chonky';
 import Noty from 'noty';
 import 'noty/lib/noty.css';
 import 'noty/lib/themes/relax.css';

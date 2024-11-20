@@ -6,7 +6,7 @@
 
 import Box from '@material-ui/core/Box';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import React, { useCallback, useMemo } from 'react';
+import React, { CSSProperties, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { reduxActions } from '../../redux/reducers';
@@ -22,9 +22,12 @@ import { useContextMenuTrigger } from '../external/FileContextMenu-hooks';
 import { DnDFileListDragLayer } from '../file-list/DnDFileListDragLayer';
 import { HotkeyListener } from './HotkeyListener';
 
-export interface ChonkyPresentationLayerProps {}
+export interface ChonkyPresentationLayerProps {
+    style?: CSSProperties;
+}
 
 export const ChonkyPresentationLayer: React.FC<ChonkyPresentationLayerProps> = ({
+    style,
     children,
 }) => {
     const dispatch = useDispatch();
@@ -67,7 +70,7 @@ export const ChonkyPresentationLayer: React.FC<ChonkyPresentationLayerProps> = (
     const classes = useStyles();
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <Box className={classes.chonkyRoot} onContextMenu={showContextMenu}>
+            <Box className={classes.chonkyRoot} onContextMenu={showContextMenu} style={style}>
                 {!dndDisabled && dndContextAvailable && <DnDFileListDragLayer />}
                 {hotkeyListenerComponents}
                 {children ? children : null}

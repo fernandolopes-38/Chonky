@@ -36,14 +36,24 @@ export const selectParentFolder = (state: RootState) => {
 export const selectRawFiles = (state: RootState) => state.rawFiles;
 export const selectFileMap = (state: RootState) => state.fileMap;
 export const selectCleanFileIds = (state: RootState) => state.cleanFileIds;
+
 export const selectFileData = (fileId: Nullable<string>) => (state: RootState) =>
     fileId ? selectFileMap(state)[fileId] : null;
+
+export const selectAllCleanFileIds = (state: RootState) => state.allCleanFileIds;
+export const selectDisplayFileData = (fileId: Nullable<string>) => (state: RootState) =>
+    fileId
+        ? state.searchString && state.allFileMap && state.searchMode === "global"
+            ? state.allFileMap[fileId] || null
+            : selectFileMap(state)[fileId] || null
+        : null;
 
 export const selectHiddenFileIdMap = (state: RootState) => state.hiddenFileIdMap;
 export const selectHiddenFileCount = (state: RootState) => Object.keys(selectHiddenFileIdMap(state)).length;
 
 export const selectFocusSearchInput = (state: RootState) => state.focusSearchInput;
 export const selectSearchString = (state: RootState) => state.searchString;
+export const selectSearchMode = (state: RootState) => state.searchMode;
 
 export const selectSelectionMap = (state: RootState) => state.selectionMap;
 export const selectSelectedFileIds = (state: RootState) => Object.keys(selectSelectionMap(state));
@@ -90,12 +100,16 @@ export const selectContextMenuTriggerFile = (state: RootState) => {
 // Raw selectors
 const getFileActionMap = (state: RootState) => state.fileActionMap;
 const getOptionMap = (state: RootState) => state.optionMap;
+const getAllFileMap = (state: RootState) => state.allFileMap;
+const getAllFileIds = (state: RootState) => state.allFileIds;
+const getAllCleanFileIds = (state: RootState) => state.allCleanFileIds;
 const getFileMap = (state: RootState) => state.fileMap;
 const getFileIds = (state: RootState) => state.fileIds;
 const getCleanFileIds = (state: RootState) => state.cleanFileIds;
 const getSortActionId = (state: RootState) => state.sortActionId;
 const getSortOrder = (state: RootState) => state.sortOrder;
 const getSearchString = (state: RootState) => state.searchString;
+const getSearchMode = (state: RootState) => state.searchMode;
 const _getLastClick = (state: RootState) => state.lastClick;
 
 // Memoized selectors
@@ -111,16 +125,62 @@ const makeGetOptionValue = (optionId: string, defaultValue: any = undefined) =>
         }
         return value;
     });
-const makeGetFiles = (fileIdsSelector: (state: RootState) => Nullable<string>[]) =>
-    createSelector(
-        [getFileMap, fileIdsSelector],
-        (fileMap, fileIds): FileArray => fileIds.map(fileId => (fileId && fileMap[fileId] ? fileMap[fileId] : null))
+const makeGetFiles = (fileIdsSelector: (state: RootState) => Nullable<string>[]) => {
+    return createSelector(
+        [fileIdsSelector, getSearchString, getFileMap, getAllFileMap],
+        (fileIds, searchString, fileMap, allFileMap): FileArray => {
+            let mapToUse = fileMap;
+            if (searchString && allFileMap && Object.keys(allFileMap).length > 0) {
+                mapToUse = allFileMap;
+            }
+            return fileIds.map(fileId => (fileId && mapToUse[fileId] ? mapToUse[fileId] : null))
+        }
     );
+};
+
+const getAllFiles = createSelector(
+    [getAllFileMap],
+    allFileMap => {
+        return allFileMap ? Object.values(allFileMap) : undefined
+    }
+);
+
+const getSearcher = createSelector(
+    [makeGetFiles(getCleanFileIds)],
+    cleanFiles => {
+        return new FuzzySearch(cleanFiles as FileData[], ['name'], { caseSensitive: false })
+    }
+);
+const getAllSearcher = createSelector(
+    [getAllFiles],
+    allFiles  => {
+        return allFiles && allFiles.length > 0
+               ? new FuzzySearch(allFiles as FileData[], ['name'], { caseSensitive: false })
+               : null;
+    }
+);
+
+const getSearchFilteredFileIds = createSelector(
+    [getSearchString, getSearchMode, getCleanFileIds, getSearcher, getAllSearcher],
+    (searchString, searchMode, currentCleanFileIds, currentSearcher, allSearcher) => {
+        if (searchString && allSearcher && searchMode === "global") {
+            // When there is a search term, search over all files
+            return allSearcher.search(searchString).map(f => f.id);
+        } else if (searchString) {
+            // When allFiles is not available, fall back to current folder search
+            return currentSearcher.search(searchString).map(f => f.id);
+        } else {
+            // No search term, return files in the current directory
+            return currentCleanFileIds;
+        }
+        // return searchString ? searcher.search(searchString).map(f => f.id) : cleanFileIds
+    }
+);
 const getSortedFileIds = createSelector(
     [
-        getFileIds,
+        getSearchFilteredFileIds,
         getSortOrder,
-        makeGetFiles(getFileIds),
+        makeGetFiles(getSearchFilteredFileIds),
         makeGetAction(getSortActionId),
         makeGetOptionValue(OptionIds.ShowFoldersFirst, false),
     ],
@@ -157,40 +217,30 @@ const getSortedFileIds = createSelector(
         const sortedFileIds = sort([...files])
             .by(sortFunctions as any)
             .map(file => (file ? file.id : null));
+
         return sortedFileIds;
     }
 );
-const getSearcher = createSelector(
-    [makeGetFiles(getCleanFileIds)],
-    cleanFiles => new FuzzySearch(cleanFiles as FileData[], ['name'], { caseSensitive: false })
-);
-const getSearchFilteredFileIds = createSelector(
-    [getCleanFileIds, getSearchString, getSearcher],
-    (cleanFileIds, searchString, searcher) =>
-        searchString ? searcher.search(searchString).map(f => f.id) : cleanFileIds
-);
 const getHiddenFileIdMap = createSelector(
-    [getSearchFilteredFileIds, makeGetFiles(getCleanFileIds), makeGetOptionValue(OptionIds.ShowHiddenFiles)],
-    (searchFilteredFileIds, cleanFiles, showHiddenFiles) => {
-        const searchFilteredFileIdsSet = new Set(searchFilteredFileIds);
+    [makeGetFiles(getSearchFilteredFileIds), makeGetOptionValue(OptionIds.ShowHiddenFiles)],
+    (files, showHiddenFiles) => {
         const hiddenFileIdMap: any = {};
-        cleanFiles.forEach(file => {
+        files.forEach(file => {
             if (!file) return;
-            else if (!searchFilteredFileIdsSet.has(file.id)) {
-                // Hidden by seach
-                hiddenFileIdMap[file.id] = true;
-            } else if (!showHiddenFiles && FileHelper.isHidden(file)) {
-                // Hidden by options
+            if (!showHiddenFiles && FileHelper.isHidden(file)) {
                 hiddenFileIdMap[file.id] = true;
             }
         });
         return hiddenFileIdMap;
     }
 );
+
 const getDisplayFileIds = createSelector(
     [getSortedFileIds, getHiddenFileIdMap],
     /** Returns files that will actually be shown to the user. */
-    (sortedFileIds, hiddenFileIdMap) => sortedFileIds.filter(id => !id || !hiddenFileIdMap[id])
+    (sortedFileIds, hiddenFileIdMap) => {
+        return sortedFileIds.filter(id => !id || !hiddenFileIdMap[id])
+    }
 );
 const getLastClickIndex = createSelector(
     [_getLastClick, getSortedFileIds],
@@ -214,9 +264,13 @@ export const selectors = {
     getFileMap,
     getFileIds,
     getCleanFileIds,
+    getAllFileMap,
+    getAllFileIds,
+    getAllCleanFileIds,
     getSortActionId,
     getSortOrder,
     getSearchString,
+    getSearchMode,
     _getLastClick,
 
     // Memoized selectors

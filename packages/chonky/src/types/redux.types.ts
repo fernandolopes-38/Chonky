@@ -31,6 +31,11 @@ export type RootState = {
     folderChainErrorMessages: string[];
     folderChain: FileArray;
 
+    allRawFiles: FileArray | any;
+    allFileMap: FileMap;
+    allFileIds: Nullable<string>[];
+    allCleanFileIds: string[];
+
     // Raw and sanitized files
     rawFiles: FileArray | any;
     filesErrorMessages: string[];
@@ -45,7 +50,7 @@ export type RootState = {
     // Search
     focusSearchInput: Nullable<() => void>;
     searchString: string;
-    searchMode: 'currentFolder';
+    searchMode: 'currentFolder' | 'global';
 
     // Selection
     selectionMap: FileSelection;

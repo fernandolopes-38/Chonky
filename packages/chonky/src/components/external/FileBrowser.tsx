@@ -39,7 +39,7 @@ export const FileBrowser = React.forwardRef<
     FileBrowserHandle,
     FileBrowserProps & { children?: ReactNode }
 >((props, ref) => {
-    const { instanceId, iconComponent, children } = props;
+    const { instanceId, iconComponent, children, style } = props;
     const disableDragAndDrop = getValueOrFallback(
         props.disableDragAndDrop,
         defaultConfig.disableDragAndDrop,
@@ -80,7 +80,7 @@ export const FileBrowser = React.forwardRef<
     const chonkyComps = (
         <>
             <ChonkyBusinessLogic ref={ref} {...props} />
-            <ChonkyPresentationLayer>{children}</ChonkyPresentationLayer>
+            <ChonkyPresentationLayer style={style}>{children}</ChonkyPresentationLayer>
         </>
     );
 

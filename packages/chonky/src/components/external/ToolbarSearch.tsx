@@ -12,12 +12,14 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 
 import { reduxActions } from '../../redux/reducers';
-import { selectSearchString } from '../../redux/selectors';
+import { selectAllCleanFileIds, selectSearchMode, selectSearchString } from '../../redux/selectors';
 import { ChonkyIconName } from '../../types/icons.types';
 import { useDebounce } from '../../util/hooks-helpers';
 import { getI18nId, I18nNamespace } from '../../util/i18n';
 import { ChonkyIconContext } from '../../util/icon-helper';
 import { important, makeGlobalChonkyStyles } from '../../util/styles';
+import { Button } from '@material-ui/core';
+import { ToolbarButton } from './ToolbarButton';
 
 export interface ToolbarSearchProps {}
 
@@ -35,6 +37,8 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
 
     const dispatch = useDispatch();
     const reduxSearchString = useSelector(selectSearchString);
+    const allCleanFileIds = useSelector(selectAllCleanFileIds);
+    const searchMode = useSelector(selectSearchMode);
 
     const [localSearchString, setLocalSearchString] = useState(reduxSearchString);
     const [debouncedLocalSearchString] = useDebounce(localSearchString, 300);
@@ -51,7 +55,6 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
         };
     }, [dispatch]);
 
-    console.log("_FILE debouncedLocalSearchString", debouncedLocalSearchString)
     useEffect(() => {
         setShowLoadingIndicator(false);
         dispatch(reduxActions.setSearchString(debouncedLocalSearchString));
@@ -76,29 +79,43 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
         [dispatch]
     );
 
+    const handleChangeSearchMode = () => {
+        dispatch(reduxActions.setSearchMode(searchMode === "currentFolder" ? "global" : "currentFolder"));
+    }
+
     return (
-        <TextField
-            className={classes.searchFieldContainer}
-            size="small"
-            variant="outlined"
-            value={localSearchString}
-            placeholder={searchPlaceholderString}
-            onChange={handleChange as any}
-            inputRef={searchInputRef}
-            InputProps={{
-                onKeyUp: handleKeyUp,
-                startAdornment: (
-                    <InputAdornment className={classes.searchIcon} position="start">
-                        <ChonkyIcon
-                            icon={showLoadingIndicator ? ChonkyIconName.loading : ChonkyIconName.search}
-                            spin={showLoadingIndicator}
-                        />
-                    </InputAdornment>
-                ),
-                className: classes.searchFieldInput,
-            }}
-            inputProps={{ className: classes.searchFieldInputInner }}
-        />
+        <>
+            <TextField
+                className={classes.searchFieldContainer}
+                size="small"
+                variant="outlined"
+                value={localSearchString}
+                placeholder={searchPlaceholderString}
+                onChange={handleChange as any}
+                inputRef={searchInputRef}
+                InputProps={{
+                    onKeyUp: handleKeyUp,
+                    startAdornment: (
+                        <InputAdornment className={classes.searchIcon} position="start">
+                            <ChonkyIcon
+                                icon={showLoadingIndicator ? ChonkyIconName.loading : ChonkyIconName.search}
+                                spin={showLoadingIndicator}
+                            />
+                        </InputAdornment>
+                    ),
+                    className: classes.searchFieldInput,
+                }}
+                inputProps={{ className: classes.searchFieldInputInner }}
+            />
+            {allCleanFileIds && allCleanFileIds.length > 0 && localSearchString.length > 0 && (
+                <ToolbarButton
+                    text={searchMode === "currentFolder" ? "Global search" : "Current folder"}
+                    tooltip={searchMode === "currentFolder" ? "Search all files" : "Search Current folder"}
+                    onClick={handleChangeSearchMode}
+                    className={classes.searchButton}
+                />
+            )}
+        </>
     );
 });
 
@@ -129,4 +146,7 @@ const useStyles = makeGlobalChonkyStyles(theme => ({
         margin: important(0),
         '-webkit-appearance': 'none',
     },
+    searchButton: {
+        marginLeft: important("0.2rem"),
+    }
 }));

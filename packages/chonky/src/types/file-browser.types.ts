@@ -1,4 +1,4 @@
-import { ElementType, UIEvent } from 'react';
+import { CSSProperties, ElementType, UIEvent } from 'react';
 import { Nullable } from 'tsdef';
 
 import { ChonkyActions } from '../action-definitions/index';
@@ -63,6 +63,14 @@ export interface FileBrowserProps {
      * will be displayed in its place.
      */
     files: FileArray;
+
+    /**
+     * List of all files. The provided value
+     * **must** be an array, where each element is either `null` or an object that
+     * satisfies the `FileData` type. If an element is `null`, a loading placeholder
+     * will be displayed in its place.
+     */
+    allFiles?: FileArray;
 
     /**
      * The current folder hierarchy. This should be an array of `files`, every
@@ -165,4 +173,6 @@ export interface FileBrowserProps {
      * Define listener for on scroll events on file lists
      */
     onScroll?: (e: UIEvent<HTMLDivElement>) => void;
+
+    style?: CSSProperties;
 }

@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { FullFileBrowser } from 'chonky';
+import { FullFileBrowser } from '@fernando.lopes/chonky';
 
 // Add react-live imports you need here
 const ReactLiveScope = {

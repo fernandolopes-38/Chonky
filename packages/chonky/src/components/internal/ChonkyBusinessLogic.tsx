@@ -21,6 +21,7 @@ export const ChonkyBusinessLogicInner = React.memo(
     React.forwardRef<FileBrowserHandle, FileBrowserProps>((props, ref) => {
         // ==== Update Redux state
         usePropReduxUpdate(reduxActions.setRawFiles, props.files ?? initialRootState.rawFiles);
+        usePropReduxUpdate(reduxActions.setAllRawFiles, props.allFiles ?? initialRootState.allRawFiles);
         usePropReduxUpdate(reduxActions.setRawFolderChain, props.folderChain);
         useDTE(
             thunkUpdateRawFileActions,

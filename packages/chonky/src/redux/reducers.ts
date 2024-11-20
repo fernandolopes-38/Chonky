@@ -47,6 +47,30 @@ const reducers = {
         state.folderChain = folderChain;
         state.folderChainErrorMessages = errorMessages;
     },
+    setAllRawFiles(state: RootState, action: PayloadAction<FileArray | any>) {
+        const allRawFiles = action.payload || [];
+        const { sanitizedArray: files, errorMessages } = sanitizeInputArray('files', allRawFiles);
+        state.allRawFiles = allRawFiles;
+        state.filesErrorMessages = errorMessages;
+
+        const allFileMap: FileMap = {};
+        files.forEach(f => {
+            if (f) allFileMap[f.id] = f;
+        });
+        const allFileIds = files.map(f => (f ? f.id : null));
+        const allCleanFileIds = allFileIds.filter(f => !!f) as string[];
+
+        state.allFileMap = allFileMap;
+        state.allFileIds = allFileIds;
+        state.allCleanFileIds = allCleanFileIds;
+
+        // Cleanup selection
+        for (const selectedFileId of Object.keys(state.selectionMap)) {
+            if (!allFileMap[selectedFileId]) {
+                delete state.selectionMap[selectedFileId];
+            }
+        }
+    },
     setRawFiles(state: RootState, action: PayloadAction<FileArray | any>) {
         const rawFiles = action.payload;
         const { sanitizedArray: files, errorMessages } = sanitizeInputArray('files', rawFiles);
@@ -89,6 +113,9 @@ const reducers = {
     },
     setSearchString(state: RootState, action: PayloadAction<string>) {
         state.searchString = action.payload;
+    },
+    setSearchMode(state: RootState, action: PayloadAction<'currentFolder' | 'global'>) {
+        state.searchMode = action.payload;
     },
     selectAllFiles(state: RootState) {
         state.fileIds

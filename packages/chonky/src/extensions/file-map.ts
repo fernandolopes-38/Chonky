@@ -151,6 +151,7 @@ export const useFileMap = <FT extends CustomFileData = CustomFileData>({
         fileMap,
         currentFolderId,
         folderChain,
+        allFiles: Object.values(fileMap),
         files,
     };
     return { data, methods, fileActionHandler };

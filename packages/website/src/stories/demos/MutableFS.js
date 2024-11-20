@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 
-import { fileMap, defineFileAction, ChonkyIconName, FullFileBrowser, setChonkyDefaults, ChonkyActions, CustomVisibilityState } from 'chonky';
+import { fileMap, defineFileAction, ChonkyIconName, FullFileBrowser, setChonkyDefaults, ChonkyActions, CustomVisibilityState } from '@fernando.lopes/chonky';
 import { ChonkyIconFA } from 'chonky-icon-fontawesome';
 import styled from 'styled-components';
 
@@ -13,6 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
 
 import DemoFsMap from './demo.fs_map.json';
+import DemoFsMap_2 from './demo.fs_map_2.json';
 
 setChonkyDefaults({ iconComponent: ChonkyIconFA });
 
@@ -42,12 +43,16 @@ const StoryComponent = () => {
         event => setStorySettings(currentState => ({ ...currentState, [event.target.name]: event.target.checked })),
         []
     );
-
     // Chonky state
-    const { data, methods, fileActionHandler } = fileMap.useFileMap({
-        baseFileMap: DemoFsMap.fileMap,
-        initialFolderId: DemoFsMap.rootFolderId,
+    // const { data, methods, fileActionHandler } = fileMap.useFileMap({
+    //     baseFileMap: DemoFsMap.fileMap,
+    //     initialFolderId: DemoFsMap.rootFolderId,
+    // });
+    const { data, fileActionHandler } = fileMap.useFileMap({
+        baseFileMap: DemoFsMap_2.fileMap,
+        initialFolderId: DemoFsMap_2.rootFolderId,
     });
+
     const thumbnailGenerator = useCallback(
         file => (file.thumbnailUrl ? `http://localhost:3000/img/${file.thumbnailUrl}` : null),
         []
@@ -176,6 +181,7 @@ const StoryComponent = () => {
                 <FullFileBrowser
                     folderChain={data.folderChain}
                     files={data.files}
+                    // allFiles={data.allFiles}
                     onFileAction={customActionHandler}
                     fileActions={[
                         ChonkyActions.OpenFiles,
@@ -189,6 +195,7 @@ const StoryComponent = () => {
                     darkMode={storySettings.darkMode}
                     disableDragAndDrop={!storySettings.dnd}
                     disableSelection={!storySettings.selection}
+                    style={{borderRadius: "0.5rem"}}
                 />
             </div>
             <Paper className="story-controls">
