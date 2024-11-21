@@ -18,7 +18,6 @@ import { useDebounce } from '../../util/hooks-helpers';
 import { getI18nId, I18nNamespace } from '../../util/i18n';
 import { ChonkyIconContext } from '../../util/icon-helper';
 import { important, makeGlobalChonkyStyles } from '../../util/styles';
-import { Button } from '@material-ui/core';
 import { ToolbarButton } from './ToolbarButton';
 
 export interface ToolbarSearchProps {}
@@ -89,6 +88,7 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
                 className={classes.searchFieldContainer}
                 size="small"
                 variant="outlined"
+                type="search"
                 value={localSearchString}
                 placeholder={searchPlaceholderString}
                 onChange={handleChange as any}

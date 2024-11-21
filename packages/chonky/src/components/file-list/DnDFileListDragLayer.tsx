@@ -10,6 +10,7 @@ import { Nullable } from 'tsdef';
 
 import { ChonkyDndFileEntryItem, ChonkyDndFileEntryType } from '../../types/dnd.types';
 import { makeGlobalChonkyStyles } from '../../util/styles';
+import ReactDOM from 'react-dom';
 
 export interface DnDFileListDragLayerProps {}
 
@@ -64,7 +65,8 @@ export const DnDFileListDragLayer: React.FC<DnDFileListDragLayerProps> = () => {
     }
 
     const selectionSize = item.payload.selectedFiles.length;
-    return (
+
+    const dragLayerContent = (
         <div style={layerStyles}>
             <div
                 style={getItemStyles(
@@ -88,6 +90,8 @@ export const DnDFileListDragLayer: React.FC<DnDFileListDragLayerProps> = () => {
             </div>
         </div>
     );
+
+    return ReactDOM.createPortal(dragLayerContent, document.body);
 };
 
 const useStyles = makeGlobalChonkyStyles(theme => ({

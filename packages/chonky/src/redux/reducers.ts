@@ -126,7 +126,12 @@ const reducers = {
         if (state.disableSelection) return;
         if (action.payload.reset) state.selectionMap = {};
         action.payload.fileIds
-            .filter(id => id && FileHelper.isSelectable(state.fileMap[id]))
+            .filter(id => {
+                if (state.allFileMap && Object.keys(state.allFileMap).length > 0) {
+                    return id && FileHelper.isSelectable(state.allFileMap[id])
+                }
+                return id && FileHelper.isSelectable(state.fileMap[id])
+            })
             .map(id => (state.selectionMap[id] = true));
     },
     toggleSelection(state: RootState, action: PayloadAction<{ fileId: string; exclusive: boolean }>) {
@@ -134,6 +139,9 @@ const reducers = {
         const oldValue = !!state.selectionMap[action.payload.fileId];
         if (action.payload.exclusive) state.selectionMap = {};
         if (oldValue) delete state.selectionMap[action.payload.fileId];
+        else if (state.allFileMap && Object.keys(state.allFileMap).length > 0 && FileHelper.isSelectable(state.allFileMap[action.payload.fileId])) {
+            state.selectionMap[action.payload.fileId] = true;
+        }
         else if (FileHelper.isSelectable(state.fileMap[action.payload.fileId])) {
             state.selectionMap[action.payload.fileId] = true;
         }
