@@ -37,13 +37,15 @@ export const selectRawFiles = (state: RootState) => state.rawFiles;
 export const selectFileMap = (state: RootState) => state.fileMap;
 export const selectCleanFileIds = (state: RootState) => state.cleanFileIds;
 
+export const selectAllFileMap = (state: RootState) => state.allFileMap;
+
 export const selectFileData = (fileId: Nullable<string>) => (state: RootState) =>
     fileId ? selectFileMap(state)[fileId] : null;
 
 export const selectAllCleanFileIds = (state: RootState) => state.allCleanFileIds;
 export const selectDisplayFileData = (fileId: Nullable<string>) => (state: RootState) =>
     fileId
-        ? state.searchString && state.allFileMap && state.searchMode === "global"
+        ? state.searchString && state.allFileMap && Object.keys(state.allFileMap).length > 0 && state.searchMode === "global"
             ? state.allFileMap[fileId] || null
             : selectFileMap(state)[fileId] || null
         : null;
@@ -61,7 +63,10 @@ export const selectSelectionSize = (state: RootState) => selectSelectedFileIds(s
 export const selectIsFileSelected = (fileId: Nullable<string>) => (state: RootState) =>
     !!fileId && !!selectSelectionMap(state)[fileId];
 export const selectSelectedFiles = (state: RootState) => {
-    const fileMap = selectFileMap(state);
+    let fileMap = selectFileMap(state);
+    if (state.allFileMap && Object.keys(state.allFileMap).length > 0 ) {
+        fileMap = selectAllFileMap(state);
+    }
     return Object.keys(selectSelectionMap(state)).map(id => fileMap[id]);
 };
 export const selectSelectedFilesForAction = (fileActionId: string) => (state: RootState) => {
@@ -288,17 +293,28 @@ export const selectors = {
 };
 
 // Selectors meant to be used outside of Redux code
-export const getFileData = (state: RootState, fileId: Nullable<string>) =>
-    fileId ? selectFileMap(state)[fileId] : null;
+export const getFileData = (state: RootState, fileId: Nullable<string>) => {
+    if (!fileId) return null;
+    if (state.allFileMap && Object.keys(state.allFileMap).length > 0 ) {
+        return fileId ? selectAllFileMap(state)[fileId] : null;   
+    }
+    return fileId ? selectFileMap(state)[fileId] : null;
+}
 export const getIsFileSelected = (state: RootState, file: FileData) => {
     // !!! We deliberately don't use `FileHelper.isSelectable` here as we want to
     //     reflect the state of Redux store accurately.
     return !!selectSelectionMap(state)[file.id];
 };
 export const getSelectedFiles = (state: RootState, ...filters: Nilable<FileFilter>[]) => {
-    const { fileMap, selectionMap } = state;
+    const { fileMap, allFileMap, selectionMap } = state;
 
-    const selectedFiles = Object.keys(selectionMap).map(id => fileMap[id]);
+    const selectedFiles = Object.keys(selectionMap).map(id => {
+        if (allFileMap && Object.keys(allFileMap).length > 0) {
+            return allFileMap[id];
+        }
+        return fileMap[id]
+    });
+
     const filteredSelectedFiles = filters.reduce(
         (prevFiles, filter) => (filter ? prevFiles.filter(filter) : prevFiles),
         selectedFiles
