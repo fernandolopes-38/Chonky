@@ -36,4 +36,6 @@ export const DefaultFileActions = [
     ChonkyActions.ToggleHiddenFiles,
     ChonkyActions.ToggleShowFoldersFirst,
     ChonkyActions.FocusSearchInput,
+    ChonkyActions.ToggleSearchMode,
+    ChonkyActions.ChangeSearchString,
 ];
