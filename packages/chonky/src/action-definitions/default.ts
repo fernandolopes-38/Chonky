@@ -209,7 +209,7 @@ export const DefaultActions = {
         }
     ),
     /**
-     * Action that enables List view.
+     * Action that toggles dark mode.
      */
     ToggleDarkMode: defineFileAction({
         id: 'enable_dark_mode',
@@ -223,5 +223,21 @@ export const DefaultActions = {
             icon: ChonkyIconName.list,
             iconOnly: true,
         },
+    } as const),
+    /**
+     * Action that toggles search mode.
+     */
+    ToggleSearchMode: defineFileAction({
+        id: 'change_search_mode',
+        option: {
+            id: OptionIds.SearchMode,
+            defaultValue: true
+        },
+    } as const),
+    /**
+     * Action that changes search string.
+     */
+    ChangeSearchString: defineFileAction({
+        id: 'change_search_string',
     } as const),
 };

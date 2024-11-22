@@ -19,6 +19,8 @@ import { getI18nId, I18nNamespace } from '../../util/i18n';
 import { ChonkyIconContext } from '../../util/icon-helper';
 import { important, makeGlobalChonkyStyles } from '../../util/styles';
 import { ToolbarButton } from './ToolbarButton';
+import { ChonkyActions } from '../../action-definitions';
+import { thunkRequestFileAction } from '../../redux/thunks/dispatchers.thunks';
 
 export interface ToolbarSearchProps {}
 
@@ -57,6 +59,7 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
     useEffect(() => {
         setShowLoadingIndicator(false);
         dispatch(reduxActions.setSearchString(debouncedLocalSearchString));
+        dispatch(thunkRequestFileAction(ChonkyActions.ChangeSearchString, {searchString: debouncedLocalSearchString}));
     }, [debouncedLocalSearchString, dispatch]);
 
     const handleChange = useCallback((event: React.FormEvent<HTMLInputElement>) => {
@@ -78,9 +81,10 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
         [dispatch]
     );
 
-    const handleChangeSearchMode = () => {
+    const handleChangeSearchMode = useCallback(() => {
         dispatch(reduxActions.setSearchMode(searchMode === "currentFolder" ? "global" : "currentFolder"));
-    }
+        dispatch(thunkRequestFileAction(ChonkyActions.ToggleSearchMode, {searchMode: searchMode === "currentFolder" ? "global" : "currentFolder"}));
+    }, [dispatch])
 
     return (
         <>
