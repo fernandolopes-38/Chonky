@@ -10,6 +10,7 @@ import { FileHelper } from '../util/file-helper';
 import { defineFileAction } from '../util/helpers';
 import { EssentialActions } from './essential';
 import { OptionIds } from './option-ids';
+import { ChangeSearchStringPaylod, ToggleSearchModePaylod } from '../types/action-payloads.types';
 
 export const DefaultActions = {
     /**
@@ -233,11 +234,13 @@ export const DefaultActions = {
             id: OptionIds.SearchMode,
             defaultValue: true
         },
+        __payloadType: {} as ToggleSearchModePaylod,
     } as const),
     /**
      * Action that changes search string.
      */
     ChangeSearchString: defineFileAction({
         id: 'change_search_string',
+        __payloadType: {} as ChangeSearchStringPaylod,
     } as const),
 };

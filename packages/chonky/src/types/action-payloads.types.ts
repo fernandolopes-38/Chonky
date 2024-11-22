@@ -47,3 +47,11 @@ export interface OpenFileContextMenuPayload {
     clientY: number;
     triggerFileId: Nullable<string>;
 }
+
+export interface ToggleSearchModePaylod {
+    searchMode: "global" | "currentFolder";
+}
+
+export interface ChangeSearchStringPaylod {
+    searchString: string;
+}
