@@ -20,6 +20,8 @@ export const EssentialFileActions = [
     ChonkyActions.OpenFiles,
     ChonkyActions.OpenParentFolder,
     ChonkyActions.OpenFileContextMenu,
+    ChonkyActions.ToggleSearchMode,
+    ChonkyActions.ChangeSearchString,
 ];
 
 export const DefaultFileActions = [
@@ -36,6 +38,4 @@ export const DefaultFileActions = [
     ChonkyActions.ToggleHiddenFiles,
     ChonkyActions.ToggleShowFoldersFirst,
     ChonkyActions.FocusSearchInput,
-    ChonkyActions.ToggleSearchMode,
-    ChonkyActions.ChangeSearchString,
 ];

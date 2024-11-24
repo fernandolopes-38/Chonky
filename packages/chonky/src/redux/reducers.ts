@@ -21,6 +21,7 @@ const reducers = {
         state: RootState,
         action: PayloadAction<Nilable<GenericFileActionHandler<FileAction>>>
     ) {
+        console.log("_ACTION setExternalFileActionHandler action.payload",action.payload)
         state.externalFileActionHandler = action.payload ?? null;
     },
     setRawFileActions(state: RootState, action: PayloadAction<FileAction[] | any>) {

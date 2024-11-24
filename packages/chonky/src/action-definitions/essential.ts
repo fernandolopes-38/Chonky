@@ -7,13 +7,13 @@ import { reduxThunks } from '../redux/thunks';
 import { thunkRequestFileAction } from '../redux/thunks/dispatchers.thunks';
 import {
     ChangeSelectionPayload, EndDragNDropPayload, KeyboardClickFilePayload, MouseClickFilePayload,
-    MoveFilesPayload, OpenFileContextMenuPayload, OpenFilesPayload, StartDragNDropPayload
+    MoveFilesPayload, OpenFileContextMenuPayload, OpenFilesPayload, StartDragNDropPayload, ChangeSearchStringPayload, ToggleSearchModePayload
 } from '../types/action-payloads.types';
 import { ChonkyIconName } from '../types/icons.types';
 import { FileHelper } from '../util/file-helper';
 import { defineFileAction } from '../util/helpers';
 import { Logger } from '../util/logger';
-import { ChonkyActions } from './index';
+import { ChonkyActions, OptionIds } from './index';
 
 export const EssentialActions = {
     /**
@@ -222,6 +222,21 @@ export const EssentialActions = {
     OpenFiles: defineFileAction({
         id: 'open_files',
         __payloadType: {} as OpenFilesPayload,
+    } as const),
+    ToggleSearchMode: defineFileAction({
+        id: 'change_search_mode',
+        option: {
+            id: OptionIds.SearchMode,
+            defaultValue: true
+        },
+        __payloadType: {} as ToggleSearchModePayload,
+    } as const),
+    /**
+     * Action that changes search string.
+     */
+    ChangeSearchString: defineFileAction({
+        id: 'change_search_string',
+        __payloadType: {} as ChangeSearchStringPayload,
     } as const),
     /**
      * Action that is triggered when user wants to go up a directory.

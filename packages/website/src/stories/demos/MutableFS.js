@@ -174,17 +174,18 @@ const StoryComponent = () => {
         }
     });
 
-
     return (
         <StyledWrapper>
             <div className="chonky-wrapper">
                 <FullFileBrowser
                     folderChain={data.folderChain}
                     files={data.files}
-                    // allFiles={data.allFiles}
+                    allFiles={data.allFiles}
                     onFileAction={customActionHandler}
                     fileActions={[
                         ChonkyActions.OpenFiles,
+                        ChonkyActions.ToggleSearchMode,
+                        ChonkyActions.ChangeSearchString,
                         CopyFiles,
                         PasteFiles,
                         ActivateOptions,

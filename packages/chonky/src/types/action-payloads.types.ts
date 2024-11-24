@@ -48,10 +48,10 @@ export interface OpenFileContextMenuPayload {
     triggerFileId: Nullable<string>;
 }
 
-export interface ToggleSearchModePaylod {
+export interface ToggleSearchModePayload {
     searchMode: "global" | "currentFolder";
 }
 
-export interface ChangeSearchStringPaylod {
+export interface ChangeSearchStringPayload {
     searchString: string;
 }

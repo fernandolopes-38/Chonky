@@ -21,6 +21,9 @@ import { important, makeGlobalChonkyStyles } from '../../util/styles';
 import { ToolbarButton } from './ToolbarButton';
 import { ChonkyActions } from '../../action-definitions';
 import { thunkRequestFileAction } from '../../redux/thunks/dispatchers.thunks';
+import { Box } from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 export interface ToolbarSearchProps {}
 
@@ -84,7 +87,7 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
     const handleChangeSearchMode = useCallback(() => {
         dispatch(reduxActions.setSearchMode(searchMode === "currentFolder" ? "global" : "currentFolder"));
         dispatch(thunkRequestFileAction(ChonkyActions.ToggleSearchMode, {searchMode: searchMode === "currentFolder" ? "global" : "currentFolder"}));
-    }, [dispatch])
+    }, [dispatch, searchMode])
 
     return (
         <>
@@ -112,11 +115,18 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
                 inputProps={{ className: classes.searchFieldInputInner }}
             />
             {allCleanFileIds && allCleanFileIds.length > 0 && localSearchString.length > 0 && (
-                <ToolbarButton
-                    text={searchMode === "currentFolder" ? "Global search" : "Current folder"}
-                    tooltip={searchMode === "currentFolder" ? "Search all files" : "Search Current folder"}
-                    onClick={handleChangeSearchMode}
-                    className={classes.searchButton}
+                <FormControlLabel
+                    className={classes.searchCheckboxLaben}
+                    control={
+                        <Checkbox
+                            checked={searchMode === "global"}
+                            onChange={handleChangeSearchMode}
+                            name="globalSearch"
+                            color="primary"
+                            className={classes.root}
+                        />
+                    }
+                    label="Global"
                 />
             )}
         </>
@@ -152,5 +162,12 @@ const useStyles = makeGlobalChonkyStyles(theme => ({
     },
     searchButton: {
         marginLeft: important("0.2rem"),
+    },
+    searchCheckboxLaben: {
+        marginLeft: "0.25rem !important",
+        marginRight: "0 !important"
+    },
+    root: {
+        padding: "0 !important",
     }
 }));
