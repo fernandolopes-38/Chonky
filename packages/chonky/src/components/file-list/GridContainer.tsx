@@ -136,7 +136,7 @@ export const GridContainer: React.FC<FileListGridProps> = React.memo(props => {
 
             return (
                 <div style={styleWithGutter}>
-                    <SmartFileEntry fileId={fileId ?? null} displayIndex={index} fileViewMode={viewConfig.mode} width={gc.current.columnWidth} />
+                    <SmartFileEntry fileId={fileId ?? null} displayIndex={index} fileViewMode={viewConfig.mode} />
                 </div>
             );
         },

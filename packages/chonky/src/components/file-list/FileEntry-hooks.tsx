@@ -91,7 +91,7 @@ const _extname = (fileName: string) => {
     return '';
 };
 
-export const useFileNameComponent = (file: Nullable<FileData>, fileNameClass?: string, truncatedNameClass?: string, width?: number) => {
+export const useFileNameComponent = (file: Nullable<FileData>, fileNameClass?: string, truncatedNameClass?: string, width?: number, justifyContent?: string) => {
     return useMemo(() => {
         if (!file) return <TextPlaceholder minLength={15} maxLength={20} />;
 
@@ -112,9 +112,8 @@ export const useFileNameComponent = (file: Nullable<FileData>, fileNameClass?: s
         }
 
         return (
-            <span className={fileNameClass}>
-                <span className={truncatedNameClass} style={{maxWidth: width}}
-                >{name}</span>
+            <span className={fileNameClass} style={{justifyContent}}>
+                <span className={truncatedNameClass} style={{maxWidth: width}}>{name}</span>
                 {extension && <span className="chonky-file-entry-description-title-extension" style={{flexShrink: 0}}>{extension}</span>}
             </span>
         );

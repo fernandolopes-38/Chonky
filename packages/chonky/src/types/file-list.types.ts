@@ -13,5 +13,4 @@ export interface FileEntryProps {
     selected: boolean;
     focused: boolean;
     dndState: DndEntryState;
-    width: number;
 }

@@ -10,17 +10,26 @@ import { Nullable } from 'tsdef';
 import { FileData } from '../../types/file.types';
 import { makeLocalChonkyStyles } from '../../util/styles';
 import { useFileNameComponent, useModifierIconComponents } from './FileEntry-hooks';
+import { useSelector } from 'react-redux';
+import { selectFileViewConfig } from '../../redux/selectors';
+import { FileViewMode } from '../../types/file-view.types';
 
 export interface FileEntryNameProps {
     file: Nullable<FileData>;
     className?: string;
-    width?: number;
 }
 
-export const FileEntryName: React.FC<FileEntryNameProps> = React.memo(({ file, className, width }) => {
+export const FileEntryName: React.FC<FileEntryNameProps> = React.memo(({ file, className }) => {
     const classes = useStyles();
+    const viewConfig = useSelector(selectFileViewConfig);
+    let width = undefined;
+    let justifyContent = 'flex-start';
+    if (viewConfig.mode === FileViewMode.Grid) {
+        width = viewConfig.entryWidth;
+        justifyContent = 'center';
+    }
     const modifierIconComponents = useModifierIconComponents(file);
-    const fileNameComponent = useFileNameComponent(file, classes.fileNameContainer, classes.truncatedName, width);
+    const fileNameComponent = useFileNameComponent(file, classes.fileNameContainer, classes.truncatedName, width, justifyContent);
 
     return (
         <span className={className} title={file ? file.name : undefined}>
@@ -43,7 +52,6 @@ const useStyles = makeLocalChonkyStyles(theme => ({
     fileNameContainer: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
         overflow: 'hidden',
     },
     truncatedName: {
