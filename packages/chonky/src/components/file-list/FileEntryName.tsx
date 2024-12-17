@@ -14,13 +14,14 @@ import { useFileNameComponent, useModifierIconComponents } from './FileEntry-hoo
 export interface FileEntryNameProps {
     file: Nullable<FileData>;
     className?: string;
+    width?: number;
 }
 
-export const FileEntryName: React.FC<FileEntryNameProps> = React.memo(({ file, className }) => {
-    const modifierIconComponents = useModifierIconComponents(file);
-    const fileNameComponent = useFileNameComponent(file);
-
+export const FileEntryName: React.FC<FileEntryNameProps> = React.memo(({ file, className, width }) => {
     const classes = useStyles();
+    const modifierIconComponents = useModifierIconComponents(file);
+    const fileNameComponent = useFileNameComponent(file, classes.fileNameContainer, classes.truncatedName, width);
+
     return (
         <span className={className} title={file ? file.name : undefined}>
             {modifierIconComponents.length > 0 && (
@@ -38,5 +39,16 @@ const useStyles = makeLocalChonkyStyles(theme => ({
         position: 'relative',
         fontSize: '0.775em',
         paddingRight: 5,
+    },
+    fileNameContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+    },
+    truncatedName: {
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
 }));

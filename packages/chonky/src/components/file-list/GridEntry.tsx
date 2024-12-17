@@ -7,7 +7,7 @@ import { useFileEntryHtmlProps, useFileEntryState } from './FileEntry-hooks';
 import { FileEntryName } from './FileEntryName';
 import { FileEntryState, GridEntryPreviewFile, GridEntryPreviewFolder } from './GridEntryPreview';
 
-export const GridEntry: React.FC<FileEntryProps> = React.memo(({ file, selected, focused, dndState }) => {
+export const GridEntry: React.FC<FileEntryProps> = React.memo(({ file, selected, focused, dndState, width }) => {
     const isDirectory = FileHelper.isDirectory(file);
     const entryState = useFileEntryState(file, selected, focused);
 
@@ -32,7 +32,7 @@ export const GridEntry: React.FC<FileEntryProps> = React.memo(({ file, selected,
                 />
             )}
             <div className={classes.gridFileEntryNameContainer}>
-                <FileEntryName className={classes.gridFileEntryName} file={file} />
+                <FileEntryName className={classes.gridFileEntryName} file={file} width={width} />
             </div>
         </div>
     );
@@ -58,6 +58,6 @@ const useFileEntryStyles = makeLocalChonkyStyles(theme => ({
         backgroundColor: (state: FileEntryState) => (state.selected ? 'rgba(0,153,255, .25)' : 'transparent'),
         textDecoration: (state: FileEntryState) => (state.focused ? 'underline' : 'none'),
         borderRadius: 3,
-        padding: [2, 4],
+        // padding: [2, 4],
     },
 }));

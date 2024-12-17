@@ -19,6 +19,7 @@ export interface SmartFileEntryProps {
     fileId: Nullable<string>;
     displayIndex: number;
     fileViewMode: FileViewMode;
+    width: number;
 }
 
 const disabledDndState: DndEntryState = {
@@ -27,7 +28,7 @@ const disabledDndState: DndEntryState = {
     dndCanDrop: false,
 };
 
-export const SmartFileEntry: React.FC<SmartFileEntryProps> = React.memo(({ fileId, displayIndex, fileViewMode }) => {
+export const SmartFileEntry: React.FC<SmartFileEntryProps> = React.memo(({ fileId, displayIndex, fileViewMode, width }) => {
     const classes = useStyles();
 
     // Basic properties
@@ -46,7 +47,7 @@ export const SmartFileEntry: React.FC<SmartFileEntryProps> = React.memo(({ fileI
     };
 
     // File entry properties
-    const fileEntryProps: Omit<FileEntryProps, 'dndState'> = {
+    const fileEntryProps: Omit<FileEntryProps, 'dndState' | 'width'> = {
         file,
         selected,
         focused,
@@ -59,13 +60,13 @@ export const SmartFileEntry: React.FC<SmartFileEntryProps> = React.memo(({ fileI
 
     return dndDisabled ? (
         <ClickableWrapper {...clickableWrapperProps}>
-            <EntryComponent {...fileEntryProps} dndState={disabledDndState} />
+            <EntryComponent {...fileEntryProps} dndState={disabledDndState} width={width} />
         </ClickableWrapper>
     ) : (
         <DnDFileEntry file={file}>
             {dndState => (
                 <ClickableWrapper {...clickableWrapperProps}>
-                    <EntryComponent {...fileEntryProps} dndState={dndState} />
+                    <EntryComponent {...fileEntryProps} dndState={dndState} width={width} />
                 </ClickableWrapper>
             )}
         </DnDFileEntry>

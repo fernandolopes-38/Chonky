@@ -85,13 +85,13 @@ export const useModifierIconComponents = (file: Nullable<FileData>) => {
 
 const _extname = (fileName: string) => {
     const parts = fileName.split('.');
-    if (parts.length) {
+    if (parts.length > 1) {
         return `.${parts[parts.length - 1]}`;
     }
     return '';
 };
 
-export const useFileNameComponent = (file: Nullable<FileData>) => {
+export const useFileNameComponent = (file: Nullable<FileData>, fileNameClass?: string, truncatedNameClass?: string, width?: number) => {
     return useMemo(() => {
         if (!file) return <TextPlaceholder minLength={15} maxLength={20} />;
 
@@ -102,15 +102,21 @@ export const useFileNameComponent = (file: Nullable<FileData>) => {
         if (isDir) {
             name = file.name;
         } else {
-            extension = file.ext ?? _extname(file.name);
-            name = file.name.substr(0, file.name.length - extension.length);
+            // Check if file name starts with a dot and has no other dots (e.g., `.gitignore`)
+            if (file.name.startsWith('.') && file.name.indexOf('.', 1) === -1) {
+                name = file.name; // Treat entire name as the file name
+            } else {
+                extension = file.ext ?? _extname(file.name);
+                name = file.name.slice(0, file.name.length - extension.length);
+            }
         }
 
         return (
-            <>
-                {name}
-                {extension && <span className="chonky-file-entry-description-title-extension">{extension}</span>}
-            </>
+            <span className={fileNameClass}>
+                <span className={truncatedNameClass} style={{maxWidth: width}}
+                >{name}</span>
+                {extension && <span className="chonky-file-entry-description-title-extension" style={{flexShrink: 0}}>{extension}</span>}
+            </span>
         );
     }, [file]);
 };
